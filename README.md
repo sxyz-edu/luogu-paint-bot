@@ -1,10 +1,41 @@
 # luogu-paint-bot
 
-**WE NEED YOUR HELP**
+**参与 WZP 的绘制工作**
 
-- 复制这份脚本：[这里](https://raw.githubusercontent.com/sxyz-edu/luogu-paint-bot/master/dist/test.min.js)；
-- 打开浏览器的隐身窗口，登录洛谷账户；
-- 在洛谷**首页**按 `Ctrl+Shift+I`，粘贴脚本到控制台并按回车运行；
-- 不要关闭首页，脚本会自动运行。
-- **偶尔检查一下脚本运行情况，如果出现 500 错误尝试重新登录或者重启浏览器**
+1. 复制这份脚本：[这里](https://raw.githubusercontent.com/sxyz-edu/luogu-paint-bot/master/dist/test.min.js)；
+2. 在洛谷随便一个什么地方（比如首页）打开控制台（`Ctrl+Shift+I`），粘贴脚本并按回车运行；
+3. 脚本会自动进行绘制和维护，但请**偶尔检查一下脚本运行情况**，必要时刷新页面重新运行脚本。
+
+**如果你想自己干别的**
+
+1. 下载源码
+
+   ```bash
+   git clone https://github.com/sxyz-edu/luogu-paint-bot
+   npm install --registry=https://registry.npm.taobao.org
+   ```
+
+2. 编译图片
+
+   ```bash
+   node image-parse.js wzp-small.jpg
+   ```
+
+   将会把 `wzp-small.jpg` 编译生成一个 `data.json` 文件。
+   注意原图像素，脚本不做缩放处理。
+
+3. 修改位置
+
+   打开 `app.js`，更改第 3 至 4 行即可。
+   `offsetX` 是水平偏移，`offsetY` 是垂直偏移。
+
+4. 生成脚本
+
+   ```bash
+   npm run build
+   ```
+
+   如果脚本生成成功，那么你就可以直接将 `dist/test.min.js` 文件散布开去了。
+   使用方法见上文。
+
 
