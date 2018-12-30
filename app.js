@@ -67,7 +67,7 @@ const run = async () => {
       if (image[ix][iy] === color) {
         console.log('[PROC] Yes, it truly fixed');
       } else {
-        tasklist.push(x, y);
+        tasklist.push([x, y]);
         console.log(`[PROC] ${x} ${y} has changed to ${color}, fixing...`);
       }
     }
