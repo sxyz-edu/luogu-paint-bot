@@ -12,6 +12,7 @@
 
    ```bash
    git clone https://github.com/sxyz-edu/luogu-paint-bot
+   cd luogu-paint-bot
    npm install --registry=https://registry.npm.taobao.org
    ```
 
