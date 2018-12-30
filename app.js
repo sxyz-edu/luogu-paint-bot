@@ -1,7 +1,7 @@
 'use strict';
 
-const offsetX = 10;
-const offsetY = 92;
+const offsetX = 0;
+const offsetY = 0;
 
 const randomElement = (arr) => {
   if (!arr.length) {
