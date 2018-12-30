@@ -3,6 +3,14 @@
 const offsetX = 10;
 const offsetY = 92;
 
+const randomElement = (arr) => {
+  if (!arr.length) {
+    return null;
+  }
+
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 const get = (url) => {
   return new Promise((resolve, reject) => {
     $.get(url, (res) => {
@@ -18,30 +26,30 @@ const post = (url, body) => {
   })
 }
 
-const tasklist = [];
+const run = (fakeBoard) => {
 
-const run = async () => {
-
-  const image = require('./data.json');
+  const image = require('./data.json').map((str) => str.split([]).map((hex) => parseInt(hex, 36)));
   const w = image.length;
   const h = image[0].length;
 
   console.log(`[INFO] Image parsed, w: ${w}, h: ${h}`);
 
-  const board = (await get('https://www.luogu.org/paintBoard/board'))
-    .split('\n').map((str) => str.split([]).map((hex) => parseInt(hex, 36)));
+  const board = fakeBoard.split('\n').map((str) => str.split([]).map((hex) => parseInt(hex, 36)));
 
   console.log(`[INFO] Board got, w: ${board.length}, h: ${board[0].length}`);
 
-  for (let i = 0; i < w; ++ i) {
-    for (let j = 0; j < h; ++ j) {
-      if (board[i + offsetX][j + offsetY] !== image[i][j]) {
-        tasklist.push([i, j]);
+  const findDiff = () => {
+    const tasklist = [];
+    for (let i = 0; i < w; ++ i) {
+      for (let j = 0; j < h; ++ j) {
+        if (board[i + offsetX][j + offsetY] !== image[i][j]) {
+          tasklist.push([i, j]);
+        }
       }
     }
+    console.log(`[DIFF] Found ${tasklist.length} differences`);
+    return tasklist;
   }
-
-  console.log(`[INFO] Find ${tasklist.length} differences`);
 
   const ws = new WebSocket('wss://ws.luogu.org/ws');
   ws.onopen = () => {
@@ -61,14 +69,13 @@ const run = async () => {
       const ix = x - offsetX;
       const iy = y - offsetY;
       if (ix < 0 || ix >= w || iy < 0 || iy >= h) {
-        // console.log('{PROC} not concerned update', x, y);
+        // not concerned update
         return;
       }
       if (image[ix][iy] === color) {
-        console.log('[PROC] Yes, it truly fixed');
+        console.log('[TEAM] Teammate found');
       } else {
-        tasklist.push([ix, iy]);
-        console.log(`[PROC] ${x} ${y} has changed to ${color}, fixing...`);
+        console.log('[TEAM] Enemy found');
       }
     }
   }
@@ -77,36 +84,42 @@ const run = async () => {
   }
 
   const paint = () => {
-    let x, y, color = -1;
-    while (tasklist.length) {
-      [x, y] = tasklist.shift();
-      color = image[x][y];
-      if (board[x + offsetX][y + offsetY] === color) {
-        console.log(`[PROC] already fixed ${x + offsetX} ${y + offsetY}`);
-        color = -1;
-        continue;
-      }
-      x += offsetX;
-      y += offsetY;
-      break;
-    }
-    if (color === -1) {
-      console.log('[PROC] no task');
+    const task = randomElement(findDiff());
+
+    if (!task) {
+      console.log('[PROC] Nothing to do with');
+      // retry 10s later
+      setTimeout(paint, 10000);
       return;
     }
-    console.log(`[PROC] fixing ${x} ${y} ${color}`);
+    const ix = task[0], iy = task[1];
+    const color = image[ix][iy];
+    const x = ix + offsetX, y = iy + offsetY;
+
+    console.log(`[PROC] Fixing ${x} ${y} to ${color}`);
+
     post('https://www.luogu.org/paintBoard/paint', { x, y, color })
-    .then((data) => {
-      console.log(data);
-      if (data.status !== 200) {
-        console.error('[ERRO] ' + data.data);
-      } else {
-        console.log(`[PROC] fixed ${x} ${y} to ${color}`);
-      }
-    }, console.error);
-    setTimeout(paint, 31000);
+      .then((data) => {
+        if (data.status !== 200) {
+          console.error(`[PROC] Request status ${data.status}`);
+          console.error('[ERRO] ' + data.data);
+          // retry 10s later
+          setTimeout(paint, 10000);
+        } else {
+          console.log(`[PROC] Request status ${data.status}`);
+          console.log(`[PROC] Fixed ${x} ${y} to ${color}`);
+          // retry 30s later
+          setTimeout(paint, 31000);
+        }
+      }, (err) => {
+        console.error('[ERRO] ' + err);
+        // retry 10s later
+        setTimeout(paint, 10000);
+      });
   }
 
   paint();
 }
-run();
+
+get('https://www.luogu.org/paintBoard/board')
+  .then(run, console.error);

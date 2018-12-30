@@ -32,5 +32,5 @@ getPixels(process.argv[2], (err, pixels) => {
     data.push(duck);
   }
 
-  fs.writeFileSync('data.json', JSON.stringify(data));
+  fs.writeFileSync('data.json', JSON.stringify(data.map((line) => line.map((color) => color.toString(36)).join('')), null, 2));
 })
