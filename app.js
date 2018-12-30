@@ -1,7 +1,7 @@
 'use strict';
 
-const offsetX = 423;
-const offsetY = 75;
+const offsetX = 10;
+const offsetY = 92;
 
 const get = (url) => {
   return new Promise((resolve, reject) => {
