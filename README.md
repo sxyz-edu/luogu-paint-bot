@@ -7,6 +7,7 @@
    ```bash
    git clone https://github.com/sxyz-edu/luogu-paint-bot
    cd luogu-paint-bot
+   git checkout manyuser
    npm install --registry=https://registry.npm.taobao.org
    ```
 
@@ -19,22 +20,38 @@
    将会把 `wzp-small.jpg` 编译生成一个 `data.json` 文件。
    注意原图像素，脚本不做缩放处理。
 
-3. 修改位置
+3. 编译 Cookie
+
+   新建一个 `cookies.txt` 文件，按照如下方式写入 cookie：
+
+   ```plain
+   __client_id=xxxxx; UM_distinctid=xxx-xxx-xxx; _uid=xxxx
+   __client_id=xxxxx; UM_distinctid=xxx-xxx-xxx; _uid=xxxx
+   __client_id=xxxxx; UM_distinctid=xxx-xxx-xxx; _uid=xxxx
+   ```
+
+   然后使用以下脚本生成 Cookie 的 json 文件：
+
+   ```bash
+   node cookie-parse.js
+   ```
+
+   将会编译生成一个 `cookies.json` 文件。
+   注意 `.gitignore` 会将这两个文件全部忽略，请妥善保管！！
+
+4. 修改绘制位置
 
    打开 `app.js`，更改第 3 至 4 行即可。
    `offsetX` 是水平偏移，`offsetY` 是垂直偏移。
 
-4. 生成脚本
+5. 生成脚本
 
    ```bash
    npm run build
    ```
 
-   如果脚本生成成功，那么你就可以直接将 `dist/test.min.js` 文件散布开去了。
+6. 工作
 
-**怎么用这个生成的脚本**
-
-1. 复制这份脚本；
-2. 在洛谷随便一个什么地方（最好是首页）打开控制台（`Ctrl+Shift+I`），粘贴脚本并按回车运行；
-3. 脚本会自动进行绘制和维护，但请**偶尔检查一下脚本运行情况**，必要时刷新页面重新运行脚本。
-
+   - 使用浏览器隐身窗口打开洛谷首页；
+   - 使用插件将 `__client_id` Cookie 的 `HttpOnly` 选项去掉；
+   - 粘贴脚本并运行。

@@ -1,5 +1,7 @@
 'use strict';
 
+const accounts = require('./login.js');
+
 const offsetX = 0;
 const offsetY = 0;
 
@@ -43,15 +45,15 @@ const run = (fakeBoard) => {
     for (let i = 0; i < w; ++ i) {
       for (let j = 0; j < h; ++ j) {
         if (board[i + offsetX][j + offsetY] !== image[i][j]) {
-          if (i === 0 || j === 0 || i === w - 1 || j === h - 1) {
-            console.log(`[DIFF] Border first`);
-            return [[i, j]];
-          }
           tasklist.push([i, j]);
         }
       }
     }
-    console.log(`[DIFF] Found ${tasklist.length} differences`);
+    if (!tasklist.length) {
+      console.log('[DIFF] Peace...');
+    } else {
+      console.log(`[DIFF] Found ${tasklist.length} differences`);
+    }
     return tasklist;
   }
 
@@ -62,7 +64,7 @@ const run = (fakeBoard) => {
       type: 'join_channel',
       channel: 'paintboard',
       channel_param: ''
-    };
+    }
     ws.send(JSON.stringify(message));
   }
   ws.onmessage = (res) => {
@@ -77,7 +79,7 @@ const run = (fakeBoard) => {
         return;
       }
       if (image[ix][iy] === color) {
-        console.log('[TEAM] Teammate found');
+        // console.log('[TEAM] Teammate found');
       } else {
         console.log('[TEAM] Enemy found');
       }
@@ -85,15 +87,19 @@ const run = (fakeBoard) => {
   }
   ws.onclose = (err) => {
     console.error('[ERRO] WebSocket closed');
+    document.querySelector('title').innerText = 'ERROR!!! ERROR!!! ERROR!!!';
   }
 
-  const paint = () => {
+  const paint = (account) => {
     const task = randomElement(findDiff());
 
+    // login
+    account();
+
     if (!task) {
-      console.log('[PROC] Nothing to do with');
+      // console.log('[PROC] Nothing to do with');
       // retry 10s later
-      setTimeout(paint, 10000);
+      setTimeout(paint, 10000, account);
       return;
     }
     const ix = task[0], iy = task[1];
@@ -102,27 +108,30 @@ const run = (fakeBoard) => {
 
     console.log(`[PROC] Fixing ${x} ${y} to ${color}`);
 
+    board[x][y] = color;
     post('https://www.luogu.org/paintBoard/paint', { x, y, color })
       .then((data) => {
         if (data.status !== 200) {
           console.error(`[PROC] Request status ${data.status}`);
           console.error('[ERRO] ' + data.data);
           // retry 10s later
-          setTimeout(paint, 10000);
+          setTimeout(paint, 10000, account);
         } else {
-          console.log(`[PROC] Request status ${data.status}`);
-          console.log(`[PROC] Fixed ${x} ${y} to ${color}`);
+          // console.log(`[PROC] Request status ${data.status}`);
+          // console.log(`[PROC] Fixed ${x} ${y} to ${color}`);
           // retry 30s later
-          setTimeout(paint, 31000);
+          setTimeout(paint, 31000, account);
         }
       }, (err) => {
         console.error('[ERRO] ' + err);
         // retry 10s later
-        setTimeout(paint, 10000);
+        setTimeout(paint, 10000, account);
       });
   }
 
-  paint();
+  accounts.forEach((account) => {
+    setTimeout(paint, 1000, account);
+  });
 }
 
 get('https://www.luogu.org/paintBoard/board')
