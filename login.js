@@ -7,7 +7,7 @@ const accounts = cookies.map((cookie) => {
     keys.push(key);
     cakes.push(key + '=' + cookie[key]);
   }
-  return () => {
+  const login = () => {
     for (const key of keys) {
       // console.log(key + '=;path=/;domain=.luogu.org');
       document.cookie = key + '=;path=/;domain=.luogu.org';
@@ -17,6 +17,7 @@ const accounts = cookies.map((cookie) => {
       document.cookie = cake + ';path=/;domain=.luogu.org';
     }
   }
+  return { login, uid: cookie._uid };
 })
 
 module.exports = accounts;

@@ -37,6 +37,7 @@ const run = (fakeBoard) => {
   console.log(`[INFO] Image parsed, w: ${w}, h: ${h}`);
 
   const board = fakeBoard.trim().split('\n').map((str) => str.split([]).map((hex) => parseInt(hex, 36)));
+  const asking = {};
 
   console.log(`[INFO] Board got, w: ${board.length}, h: ${board[0].length}`);
 
@@ -44,6 +45,9 @@ const run = (fakeBoard) => {
     const tasklist = [];
     for (let i = 0; i < w; ++ i) {
       for (let j = 0; j < h; ++ j) {
+        if (asking[[i + offsetX, j + offsetY]]) {
+          continue;
+        }
         if (board[i + offsetX][j + offsetY] !== image[i][j]) {
           tasklist.push([i, j]);
         }
@@ -94,7 +98,7 @@ const run = (fakeBoard) => {
     const task = randomElement(findDiff());
 
     // login
-    account();
+    account.login();
 
     if (!task) {
       // console.log('[PROC] Nothing to do with');
@@ -108,11 +112,12 @@ const run = (fakeBoard) => {
 
     console.log(`[PROC] Fixing ${x} ${y} to ${color}`);
 
-    board[x][y] = color;
+    asking[[x, y]] = true;
     post('https://www.luogu.org/paintBoard/paint', { x, y, color })
       .then((data) => {
+        asking[[x, y]] = false;
         if (data.status !== 200) {
-          console.error(`[PROC] Request status ${data.status}`);
+          console.error(`[PROC] Request status ${data.status}, uid ${account.uid}`);
           console.error('[ERRO] ' + data.data);
           // retry 10s later
           setTimeout(paint, 10000, account);
@@ -123,6 +128,7 @@ const run = (fakeBoard) => {
           setTimeout(paint, 31000, account);
         }
       }, (err) => {
+        asking[[x, y]] = false;
         console.error('[ERRO] ' + err);
         // retry 10s later
         setTimeout(paint, 10000, account);

@@ -30,14 +30,7 @@
    __client_id=xxxxx; UM_distinctid=xxx-xxx-xxx; _uid=xxxx
    ```
 
-   然后使用以下脚本生成 Cookie 的 json 文件：
-
-   ```bash
-   node cookie-parse.js
-   ```
-
-   将会编译生成一个 `cookies.json` 文件。
-   注意 `.gitignore` 会将这两个文件全部忽略，请妥善保管！！
+   注意 `.gitignore` 会忽略这个文件，请妥善保管！！
 
 4. 修改绘制位置
 

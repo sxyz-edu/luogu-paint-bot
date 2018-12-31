@@ -6,7 +6,7 @@
     "get-pixels": "^3.3.2"
   },
   "scripts": {
-    "build": "webpack --mode=production"
+    "build": "node cookie-parse.js && webpack --mode=production"
   },
   "devDependencies": {
     "babel-loader": "^8.0.4",
