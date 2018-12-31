@@ -34,7 +34,7 @@ const run = (fakeBoard) => {
 
   console.log(`[INFO] Image parsed, w: ${w}, h: ${h}`);
 
-  const board = fakeBoard.split('\n').map((str) => str.split([]).map((hex) => parseInt(hex, 36)));
+  const board = fakeBoard.trim().split('\n').map((str) => str.split([]).map((hex) => parseInt(hex, 36)));
 
   console.log(`[INFO] Board got, w: ${board.length}, h: ${board[0].length}`);
 
@@ -43,6 +43,10 @@ const run = (fakeBoard) => {
     for (let i = 0; i < w; ++ i) {
       for (let j = 0; j < h; ++ j) {
         if (board[i + offsetX][j + offsetY] !== image[i][j]) {
+          if (i === 0 || j === 0 || i === w - 1 || j === h - 1) {
+            console.log(`[DIFF] Border first`);
+            return [[i, j]];
+          }
           tasklist.push([i, j]);
         }
       }
