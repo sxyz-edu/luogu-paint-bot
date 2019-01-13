@@ -1,5 +1,10 @@
 # luogu-paint-bot
 
+**注意：**
+
+- 此脚本是中心化的，需要用户贡献 cookie 才能工作；
+- 如果你想要去中心化，可以切换到 `master` 分支。
+
 **使用方式**
 
 1. 下载源码
@@ -32,6 +37,12 @@
 
    注意 `.gitignore` 会忽略这个文件，请妥善保管！！
 
+   ```bash
+   node cookie-parse.js
+   ```
+
+   将会生成一个 `cookies.json` 文件。
+
 4. 修改绘制位置
 
    打开 `app.js`，更改第 3 至 4 行即可。
@@ -42,6 +53,8 @@
    ```bash
    npm run build
    ```
+
+   生成的文件位于 `dist/test.min.js`。
 
 6. 工作
 
